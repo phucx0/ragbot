@@ -9,16 +9,15 @@ from config import CHUNKS_PATH, EMBEDDING_MODEL, FAISS_INDEX_PATH
 # ── 1. Load dataset ─────────────────────
 dataset = load_dataset("taidng/UIT-ViQuAD2.0")["train"]
 
+seen = set()
 corpus = []
 
 for item in dataset:
     text = item["context"]
     if text and len(text.strip()) > 50:
-        corpus.append({
-            "text": text,
-            "question": item["question"],
-            "answer": item["answers"]["text"][0] if item["answers"]["text"] else ""
-        })
+        if text not in seen:
+            seen.add(text)
+            corpus.append({"text": text})
 
 print("Corpus size:", len(corpus))
 
