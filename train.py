@@ -7,12 +7,13 @@ import pickle
 from config import CHUNKS_PATH, EMBEDDING_MODEL, FAISS_INDEX_PATH
 
 # ── 1. Load dataset ─────────────────────
-dataset = load_dataset("taidng/UIT-ViQuAD2.0")["train"]
+train_dataset = load_dataset("taidng/UIT-ViQuAD2.0", split="train")
+# dataset = load_dataset("taidng/UIT-ViQuAD2.0")["train"]
 
 seen = set()
 corpus = []
 
-for item in dataset:
+for item in train_dataset:
     text = item["context"]
     if text and len(text.strip()) > 50:
         if text not in seen:

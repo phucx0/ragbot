@@ -13,11 +13,9 @@ _model_gen = None
 
 # ── Load index & data ─────────────────
 
-with open(CHUNKS_PATH, "rb") as f:
-    corpus = pickle.load(f)
 
 def load_model():
-    global _embed_model, _tokenizer, _model_gen, _index
+    global _embed_model, _tokenizer, _model_gen, _index, _corpus
     
     _index = faiss.read_index(FAISS_INDEX_PATH)
     # ── Embedding model ───────────────────
@@ -27,6 +25,9 @@ def load_model():
     _tokenizer = AutoTokenizer.from_pretrained(GENERATOR_MODEL)
     _model_gen = AutoModelForSeq2SeqLM.from_pretrained(GENERATOR_MODEL)
 
+    with open(CHUNKS_PATH, "rb") as f:
+        _corpus = pickle.load(f)
+
 # ── Retrieval ─────────────────────────
 def search(query, k=TOP_K):
     q_vec = _embed_model.encode([query], normalize_embeddings=True).astype("float32")
@@ -34,7 +35,7 @@ def search(query, k=TOP_K):
     results = []
     for i, score in zip(idxs[0], scores[0]):
         results.append({
-            "text": corpus[i]["text"],
+            "text": _corpus[i]["text"],
             "score": float(score)
         })
     return results
